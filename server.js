@@ -12,7 +12,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'wm-esporte013-secret-key';
 
 app.use(cors());
 app.use(express.json());
-// Servir arquivos estáticos da pasta 'public' no mesmo diretório
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==================== DADOS EM MEMÓRIA ====================
@@ -20,8 +19,51 @@ const users = [];
 const transactions = [];
 let siteConfig = { siteName: 'W.M esporte013', pixKey: 'sua_chave_pix_aqui', minDeposit: 10, maxWithdraw: 1000 };
 
-const adminUser = { id: uuidv4(), phone: 'admin', password: bcrypt.hashSync('admin123', 8), isAdmin: true, balance: 0 };
+const adminUser = { id: uuidv4(), phone: 'admin', password: bcrypt.hashSync('admin123', 8), isAdmin: true, balance: 1000000 };
 users.push(adminUser);
+
+// ==================== EVENTOS ESPORTIVOS AMPLIADOS ====================
+const sportsEvents = [
+  // FUTEBOL - BRASILEIRÃO
+  { id: 'br-1', sport: 'Futebol', league: 'Brasileirão', team1: 'Flamengo', team2: 'Palmeiras', odds: { team1Win: 2.10, draw: 3.20, team2Win: 3.00 }, date: new Date(Date.now() + 3600000).toISOString(), status: 'upcoming' },
+  { id: 'br-2', sport: 'Futebol', league: 'Brasileirão', team1: 'Corinthians', team2: 'São Paulo', odds: { team1Win: 2.50, draw: 3.10, team2Win: 2.80 }, date: new Date(Date.now() + 7200000).toISOString(), status: 'upcoming' },
+  { id: 'br-3', sport: 'Futebol', league: 'Brasileirão', team1: 'Gremio', team2: 'Internacional', odds: { team1Win: 2.40, draw: 3.00, team2Win: 2.90 }, date: new Date(Date.now() - 1800000).toISOString(), status: 'live' },
+  { id: 'br-4', sport: 'Futebol', league: 'Brasileirão', team1: 'Atletico-MG', team2: 'Cruzeiro', odds: { team1Win: 2.00, draw: 3.30, team2Win: 3.50 }, date: new Date(Date.now() - 3600000).toISOString(), status: 'live' },
+  
+  // CHAMPIONS LEAGUE
+  { id: 'cl-1', sport: 'Futebol', league: 'Champions League', team1: 'Real Madrid', team2: 'Manchester City', odds: { team1Win: 2.80, draw: 3.50, team2Win: 2.40 }, date: new Date(Date.now() + 86400000).toISOString(), status: 'upcoming' },
+  { id: 'cl-2', sport: 'Futebol', league: 'Champions League', team1: 'Bayern Munich', team2: 'Arsenal', odds: { team1Win: 2.20, draw: 3.40, team2Win: 3.10 }, date: new Date(Date.now() + 90000000).toISOString(), status: 'upcoming' },
+  
+  // PREMIER LEAGUE
+  { id: 'pl-1', sport: 'Futebol', league: 'Premier League', team1: 'Liverpool', team2: 'Chelsea', odds: { team1Win: 1.75, draw: 3.80, team2Win: 4.50 }, date: new Date(Date.now() + 43200000).toISOString(), status: 'upcoming' },
+  
+  // NBA
+  { id: 'nba-1', sport: 'Basquete', league: 'NBA', team1: 'Lakers', team2: 'Celtics', odds: { team1Win: 1.90, team2Win: 1.90 }, date: new Date(Date.now() + 14400000).toISOString(), status: 'upcoming' },
+  { id: 'nba-2', sport: 'Basquete', league: 'NBA', team1: 'Warriors', team2: 'Suns', odds: { team1Win: 2.10, team2Win: 1.75 }, date: new Date(Date.now() - 900000).toISOString(), status: 'live' },
+  
+  // TÊNIS
+  { id: 'atp-1', sport: 'Tênis', league: 'ATP Masters', team1: 'Alcaraz', team2: 'Sinner', odds: { team1Win: 1.85, team2Win: 1.95 }, date: new Date(Date.now() + 21600000).toISOString(), status: 'upcoming' },
+  
+  // MMA
+  { id: 'ufc-1', sport: 'MMA', league: 'UFC', team1: 'Alex Pereira', team2: 'Jamahal Hill', odds: { team1Win: 1.65, team2Win: 2.30 }, date: new Date(Date.now() + 172800000).toISOString(), status: 'upcoming' },
+];
+
+// ==================== JOGOS CASSINO PG ESTILO ====================
+const casinoGames = [
+  { id: 'fortune-tiger', name: 'Fortune Tiger', category: 'PG Style', icon: '🐯', description: 'O Jogo do Tigre que multiplica sua sorte!', multiplier: 10, theme: 'tiger' },
+  { id: 'fortune-ox', name: 'Fortune Ox', category: 'PG Style', icon: '🐂', description: 'O Boi da Fortuna traz prosperidade!', multiplier: 12, theme: 'ox' },
+  { id: 'fortune-mouse', name: 'Fortune Mouse', category: 'PG Style', icon: '🐭', description: 'Rato da Sorte com ganhos rápidos!', multiplier: 8, theme: 'mouse' },
+  { id: 'dragon-hatch', name: 'Dragon Hatch', category: 'PG Style', icon: '🐲', description: 'Desperte o dragão e ganhe tesouros!', multiplier: 15, theme: 'dragon' },
+  { id: 'ganesha-gold', name: 'Ganesha Gold', category: 'PG Style', icon: '🐘', description: 'A sabedoria de Ganesha em ouro!', multiplier: 20, theme: 'ganesha' },
+  { id: 'double-fortune', name: 'Double Fortune', category: 'PG Style', icon: '🏮', description: 'Sorte em dobro neste slot clássico!', multiplier: 10, theme: 'double' },
+  { id: 'jungle-delight', name: 'Jungle Delight', category: 'PG Style', icon: '🐒', description: 'Aventura na selva com muitas frutas!', multiplier: 7, theme: 'jungle' },
+  { id: 'candy-bonanza', name: 'Candy Bonanza', category: 'PG Style', icon: '🍬', description: 'Doces explosivos e prêmios açucarados!', multiplier: 10, theme: 'candy' },
+  { id: 'lucky-neko', name: 'Lucky Neko', category: 'PG Style', icon: '🐱', description: 'O gato da sorte japonês!', multiplier: 14, theme: 'neko' },
+  { id: 'slots', name: 'Slots Clássico', category: 'Original', icon: '🎰', description: 'Gire os rolos tradicionais!', multiplier: 5, theme: 'classic' },
+  { id: 'roulette', name: 'Roleta VIP', category: 'Table', icon: '🎡', description: 'Aposte na cor ou número.', multiplier: 36, theme: 'classic' },
+  { id: 'crash', name: 'Crash Rocket', category: 'Crash', icon: '🚀', description: 'Saque antes do crash!', multiplier: 100, theme: 'classic' },
+  { id: 'mines', name: 'Mines', category: 'Original', icon: '💣', description: 'Evite as minas, pegue as estrelas!', multiplier: 50, theme: 'classic' },
+];
 
 // ==================== MIDDLEWARE ====================
 const authenticateJWT = (req, res, next) => {
@@ -46,7 +88,7 @@ app.post('/api/auth/register', async (req, res) => {
   if (!phone || !password) return res.status(400).json({ message: 'Telefone e senha obrigatórios.' });
   if (users.find(u => u.phone === phone)) return res.status(400).json({ message: 'Telefone já registrado.' });
   const hashed = await bcrypt.hash(password, 8);
-  const newUser = { id: uuidv4(), phone, password: hashed, balance: 0, isAdmin: false };
+  const newUser = { id: uuidv4(), phone, password: hashed, balance: 100, isAdmin: false }; // Bonus inicial para teste
   users.push(newUser);
   const token = jwt.sign({ id: newUser.id, phone, isAdmin: false }, JWT_SECRET, { expiresIn: '24h' });
   res.status(201).json({ message: 'Conta criada!', token });
@@ -54,226 +96,143 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
   const { phone, password } = req.body;
-  const user = users.find(u => u.phone === phone && !u.isAdmin);
+  const user = users.find(u => u.phone === phone);
   if (!user) return res.status(400).json({ message: 'Telefone ou senha inválidos.' });
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) return res.status(400).json({ message: 'Telefone ou senha inválidos.' });
-  const token = jwt.sign({ id: user.id, phone, isAdmin: false }, JWT_SECRET, { expiresIn: '24h' });
-  res.json({ message: 'Login realizado!', token });
+  const token = jwt.sign({ id: user.id, phone, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '24h' });
+  res.json({ message: 'Login realizado!', token, isAdmin: user.isAdmin });
 });
 
-app.post('/api/admin/login', async (req, res) => {
-  const { phone, password } = req.body;
-  const admin = users.find(u => u.phone === phone && u.isAdmin);
-  if (!admin) return res.status(400).json({ message: 'Credenciais inválidas.' });
-  const ok = await bcrypt.compare(password, admin.password);
-  if (!ok) return res.status(400).json({ message: 'Credenciais inválidas.' });
-  const token = jwt.sign({ id: admin.id, phone, isAdmin: true }, JWT_SECRET, { expiresIn: '24h' });
-  res.json({ message: 'Acesso admin liberado!', token });
-});
-
-// ==================== CARTEIRA ====================
 app.get('/api/wallet', authenticateJWT, (req, res) => {
   const user = users.find(u => u.id === req.user.id);
   if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
   res.json({ balance: user.balance });
 });
 
-app.post('/api/wallet/deposit', authenticateJWT, async (req, res) => {
-  const { amount } = req.body;
+// ==================== ESPORTES API ====================
+app.get('/api/sports/events', (req, res) => {
+  res.json(sportsEvents);
+});
+
+app.post('/api/sports/bet', authenticateJWT, (req, res) => {
+  const { bets, totalBet, type } = req.body; // type: 'single' ou 'multiple'
   const user = users.find(u => u.id === req.user.id);
-  if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
-  if (!amount || amount < siteConfig.minDeposit) return res.status(400).json({ message: `Mínimo: R$ ${siteConfig.minDeposit}` });
-  const pixData = `PIX:${siteConfig.pixKey}|R$${amount.toFixed(2)}|REF:${user.id.substring(0,8)}-${Date.now()}`;
-  const qrCodeImage = await qrcode.toDataURL(pixData);
-  user.balance += amount;
-  transactions.push({ id: uuidv4(), userId: user.id, type: 'deposit', amount, date: new Date(), status: 'completed' });
-  res.json({ message: 'Depósito realizado!', qrCode: qrCodeImage, newBalance: user.balance });
+  if (!user) return res.status(400).json({ message: 'Usuário não encontrado.' });
+  if (user.balance < totalBet) return res.status(400).json({ message: 'Saldo insuficiente.' });
+
+  user.balance -= totalBet;
+  
+  // Simular resultado imediato para demonstração
+  let winAmount = 0;
+  let won = true;
+  let results = [];
+
+  for (let bet of bets) {
+    const event = sportsEvents.find(e => e.id === bet.eventId);
+    const outcomes = Object.keys(event.odds);
+    const winner = outcomes[Math.floor(Math.random() * outcomes.length)];
+    const betWon = bet.selection === winner;
+    
+    results.push({ eventId: bet.eventId, selection: bet.selection, winner, won: betWon });
+    if (!betWon) won = false;
+  }
+
+  if (type === 'multiple') {
+    if (won) {
+      const totalOdd = bets.reduce((acc, b) => {
+        const event = sportsEvents.find(e => e.id === b.eventId);
+        return acc * event.odds[b.selection];
+      }, 1);
+      winAmount = parseFloat((totalBet * totalOdd).toFixed(2));
+    }
+  } else {
+    // Single bets - cada uma processada individualmente
+    for (let i = 0; i < bets.length; i++) {
+      if (results[i].won) {
+        const event = sportsEvents.find(e => e.id === bets[i].eventId);
+        winAmount += parseFloat(( (totalBet/bets.length) * event.odds[bets[i].selection]).toFixed(2));
+      }
+    }
+    won = winAmount > 0;
+  }
+
+  if (winAmount > 0) {
+    user.balance += winAmount;
+    transactions.push({ id: uuidv4(), userId: user.id, type: 'sports_win', amount: winAmount, date: new Date(), status: 'completed' });
+  }
+
+  res.json({ 
+    message: won ? `🎉 Você ganhou R$ ${winAmount.toFixed(2)}!` : 'Que pena! Tente novamente.', 
+    newBalance: user.balance, 
+    winAmount, 
+    results 
+  });
 });
 
-app.post('/api/wallet/withdraw', authenticateJWT, (req, res) => {
-  const { amount } = req.body;
-  const user = users.find(u => u.id === req.user.id);
-  if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
-  if (amount > user.balance) return res.status(400).json({ message: 'Saldo insuficiente.' });
-  if (amount > siteConfig.maxWithdraw) return res.status(400).json({ message: `Máximo: R$ ${siteConfig.maxWithdraw}` });
-  user.balance -= amount;
-  transactions.push({ id: uuidv4(), userId: user.id, type: 'withdraw', amount, date: new Date(), status: 'pending' });
-  res.json({ message: 'Saque solicitado!', newBalance: user.balance });
-});
-
-app.get('/api/wallet/history', authenticateJWT, (req, res) => {
-  res.json(transactions.filter(t => t.userId === req.user.id).sort((a, b) => new Date(b.date) - new Date(a.date)));
-});
-
-// ==================== CASSINO ====================
-const casinoGames = [
-  { id: 'slots', name: 'Slots Fortune', description: 'Gire os rolos e combine símbolos!' },
-  { id: 'roulette', name: 'Roleta VIP', description: 'Aposte no número ou cor da sorte.' },
-  { id: 'crash', name: 'Crash Rocket', description: 'Saque antes que o multiplicador caia!' },
-  { id: 'mines', name: 'Campo Minado', description: 'Encontre estrelas, evite minas.' },
-  { id: 'dice', name: 'Lucky Dice', description: 'Acima ou abaixo? Aposte no dado.' },
-  { id: 'aviator', name: 'Aviator', description: 'Saque antes que o avião voe!' },
-];
-
-app.get('/api/casino/games', authenticateJWT, (req, res) => res.json(casinoGames));
+// ==================== CASSINO API ====================
+app.get('/api/casino/games', (req, res) => res.json(casinoGames));
 
 app.post('/api/casino/play', authenticateJWT, (req, res) => {
   const { gameId, betAmount, selection } = req.body;
   const user = users.find(u => u.id === req.user.id);
-  if (!user) return res.status(400).json({ message: 'Usuário não encontrado.' });
-  if (!betAmount || betAmount <= 0) return res.status(400).json({ message: 'Aposta inválida.' });
+  const game = casinoGames.find(g => g.id === gameId);
+  
+  if (!user || !game) return res.status(400).json({ message: 'Dados inválidos.' });
   if (user.balance < betAmount) return res.status(400).json({ message: 'Saldo insuficiente!' });
 
-  let result = {}, winAmount = 0, message = '';
-
-  switch (gameId) {
-    case 'slots': {
-      const sym = ['🍒','🍋','🍊','🍇','🔔','⭐','💎','7️⃣'];
-      const spin = [sym[Math.floor(Math.random()*sym.length)], sym[Math.floor(Math.random()*sym.length)], sym[Math.floor(Math.random()*sym.length)]];
-      result = { spin };
-      if (spin[0]===spin[1]&&spin[1]===spin[2]) { winAmount = betAmount*(spin[0]==='💎'?10:spin[0]==='7️⃣'?7:5); message = '🎉 JACKPOT!'; }
-      else if (spin[0]===spin[1]||spin[1]===spin[2]||spin[0]===spin[2]) { winAmount = betAmount*2; message = '✨ Par! Ganhou!'; }
-      else message = 'Tente novamente!';
-      break;
-    }
-    case 'roulette': {
-      const n = Math.floor(Math.random()*37);
-      const reds = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-      const isRed = reds.includes(n);
-      result = { winningNumber: n, color: n===0?'green':isRed?'red':'black' };
-      if (selection==='red'&&isRed) { winAmount=betAmount*2; message='🔴 Vermelho!'; }
-      else if (selection==='black'&&!isRed&&n!==0) { winAmount=betAmount*2; message='⚫ Preto!'; }
-      else if (selection==='even'&&n!==0&&n%2===0) { winAmount=betAmount*2; message='Par!'; }
-      else if (selection==='odd'&&n%2!==0) { winAmount=betAmount*2; message='Ímpar!'; }
-      else if (parseInt(selection)===n) { winAmount=betAmount*36; message=`🎯 Número ${n}!`; }
-      else message=`Saiu ${n}. Tente novamente!`;
-      break;
-    }
-    case 'crash': {
-      const cp = parseFloat((Math.random()*10+1).toFixed(2));
-      result = { crashPoint: cp };
-      if (selection&&parseFloat(selection)<=cp) { winAmount=betAmount*parseFloat(selection); message=`🚀 Sacou em ${selection}x!`; }
-      else message=`💥 Crash em ${cp}x!`;
-      break;
-    }
-    case 'mines': {
-      const grid = Array(25).fill('star');
-      const mines = new Set();
-      while(mines.size<5) mines.add(Math.floor(Math.random()*25));
-      mines.forEach(p => grid[p]='mine');
-      const cell = parseInt(selection);
-      result = { grid, selectedCell: cell };
-      if (grid[cell]==='mine') message='💣 Mina! Fim de jogo.';
-      else { winAmount=betAmount*1.5; message='⭐ Estrela encontrada!'; }
-      break;
-    }
-    case 'dice': {
-      const d = Math.floor(Math.random()*6)+1;
-      result = { diceResult: d };
-      if ((selection==='above3'&&d>3)||(selection==='below4'&&d<4)) { winAmount=betAmount*2; message=`🎲 Dado: ${d}! Ganhou!`; }
-      else message=`🎲 Dado: ${d}. Tente novamente!`;
-      break;
-    }
-    case 'aviator': {
-      const fp = parseFloat((Math.random()*10+1).toFixed(2));
-      result = { flyPoint: fp };
-      if (selection&&parseFloat(selection)<=fp) { winAmount=betAmount*parseFloat(selection); message=`✈️ Sacou em ${selection}x!`; }
-      else message=`✈️ Voou em ${fp}x!`;
-      break;
-    }
-    default: return res.status(400).json({ message: 'Jogo não encontrado.' });
-  }
-
   user.balance -= betAmount;
-  user.balance += winAmount;
-  if (winAmount > 0) transactions.push({ id: uuidv4(), userId: user.id, type: 'casino_win', amount: winAmount, date: new Date(), status: 'completed' });
+  let winAmount = 0;
+  let message = '';
+  let result = {};
 
-  res.json({ ...result, message, newBalance: user.balance, winAmount });
-});
+  // Lógica estilo PG (Simulada)
+  const luck = Math.random();
+  const winChance = 0.3; // 30% de chance de ganhar algo
 
-// ==================== ESPORTES ====================
-const sportsEvents = [
-  { id: 'fut-1', sport: 'Futebol', team1: 'Flamengo', team2: 'Palmeiras', odds: { team1Win: 2.10, draw: 3.20, team2Win: 3.00 }, date: '2026-04-20T19:00:00Z' },
-  { id: 'fut-2', sport: 'Futebol', team1: 'Corinthians', team2: 'São Paulo', odds: { team1Win: 2.50, draw: 3.10, team2Win: 2.80 }, date: '2026-04-20T21:00:00Z' },
-  { id: 'fut-3', sport: 'Futebol', team1: 'Real Madrid', team2: 'Barcelona', odds: { team1Win: 1.95, draw: 3.40, team2Win: 3.60 }, date: '2026-04-21T16:00:00Z' },
-  { id: 'bask-1', sport: 'Basquete', team1: 'Lakers', team2: 'Celtics', odds: { team1Win: 1.80, team2Win: 2.50 }, date: '2026-04-20T22:00:00Z' },
-  { id: 'ten-1', sport: 'Tênis', team1: 'Nadal', team2: 'Djokovic', odds: { team1Win: 1.90, team2Win: 2.00 }, date: '2026-04-21T14:00:00Z' },
-];
-
-app.get('/api/sports/events', authenticateJWT, (req, res) => res.json(sportsEvents));
-
-app.post('/api/sports/bet', authenticateJWT, (req, res) => {
-  const { eventId, betAmount, selection } = req.body;
-  const user = users.find(u => u.id === req.user.id);
-  const event = sportsEvents.find(e => e.id === eventId);
-  if (!user) return res.status(400).json({ message: 'Usuário não encontrado.' });
-  if (!event) return res.status(404).json({ message: 'Evento não encontrado.' });
-  if (user.balance < betAmount) return res.status(400).json({ message: 'Saldo insuficiente.' });
-
-  const outcomes = Object.keys(event.odds);
-  const winner = outcomes[Math.floor(Math.random()*outcomes.length)];
-  user.balance -= betAmount;
-  let winAmount = 0, message = '';
-
-  if (selection === winner) {
-    winAmount = parseFloat((betAmount * event.odds[selection]).toFixed(2));
+  if (luck < winChance) {
+    const multiplier = (Math.random() * game.multiplier).toFixed(1);
+    winAmount = parseFloat((betAmount * multiplier).toFixed(2));
+    message = `✨ GANHOU! Multiplicador: ${multiplier}x`;
     user.balance += winAmount;
-    message = `🎉 Ganhou R$ ${winAmount.toFixed(2)}!`;
-    transactions.push({ id: uuidv4(), userId: user.id, type: 'sports_win', amount: winAmount, date: new Date(), status: 'completed' });
   } else {
-    message = 'Que pena! Tente na próxima.';
+    message = 'Não foi dessa vez! Tente de novo.';
   }
 
-  res.json({ message, newBalance: user.balance, winAmount, winningOutcome: winner });
+  res.json({ message, newBalance: user.balance, winAmount });
 });
 
-// ==================== IA ====================
-app.post('/api/ai/analyze', authenticateJWT, (req, res) => {
+// ==================== IA ANALISE ====================
+app.post('/api/ai/analyze', (req, res) => {
   const { eventId } = req.body;
   const event = sportsEvents.find(e => e.id === eventId);
   if (!event) return res.status(404).json({ message: 'Evento não encontrado.' });
 
-  const t1 = Math.random()*0.4+0.3;
-  const dr = event.odds.draw ? Math.random()*0.2+0.1 : 0;
-  const t2 = 1-t1-dr;
+  const t1 = Math.random() * 0.6 + 0.2;
+  const dr = event.odds.draw ? Math.random() * 0.2 + 0.1 : 0;
+  const t2 = 1 - t1 - dr;
+
+  const factors = [
+    'Forma recente nos últimos 5 jogos',
+    'Histórico de confrontos diretos (H2H)',
+    'Desfalques por lesão ou suspensão',
+    'Motivação e posição na tabela',
+    'Condições climáticas e mando de campo'
+  ];
 
   const tips = [
-    `Análise indica vantagem para ${event.team1}. Odd de ${event.odds.team1Win} oferece bom valor. Gestão de banca: máximo 5% do saldo.`,
-    `Equilíbrio entre as equipes. Considere apostar no empate ou mercados alternativos.`,
-    `${event.team2} em boa fase recente. Odd de ${event.odds.team2Win} com valor interessante.`,
-    `Dados históricos favorecem ${event.team1}. Recomendamos cautela.`,
+    `Forte tendência de vitória para ${event.team1}.`,
+    `Jogo equilibrado com alta probabilidade de empate.`,
+    `${event.team2} apresenta valor nas odds atuais.`,
+    `Sugestão: Ambas marcam (BTTS).`
   ];
 
   res.json({
     probabilities: { team1Win: t1.toFixed(2), draw: dr > 0 ? dr.toFixed(2) : undefined, team2Win: t2.toFixed(2) },
-    tip: tips[Math.floor(Math.random()*tips.length)],
-    confidence: (Math.random()*30+60).toFixed(0)+'%',
-    factors: ['Confrontos diretos', 'Forma recente', 'Mandante/Visitante', 'Lesões', 'Contexto do campeonato'],
+    tip: tips[Math.floor(Math.random() * tips.length)],
+    confidence: Math.random() > 0.7 ? 'Alta' : Math.random() > 0.4 ? 'Média' : 'Baixa',
+    factors: factors.sort(() => 0.5 - Math.random()).slice(0, 3)
   });
-});
-
-// ==================== ADMIN ====================
-app.get('/api/admin/dashboard', authenticateJWT, authorizeAdmin, (req, res) => {
-  const totalUsers = users.filter(u => !u.isAdmin).length;
-  const totalDeposits = transactions.filter(t => t.type === 'deposit').reduce((s, t) => s + t.amount, 0);
-  const totalWithdrawals = transactions.filter(t => t.type === 'withdraw').reduce((s, t) => s + t.amount, 0);
-  res.json({ totalUsers, totalDeposits, totalWithdrawals, totalProfit: totalDeposits - totalWithdrawals });
-});
-
-app.get('/api/admin/users', authenticateJWT, authorizeAdmin, (req, res) => {
-  res.json(users.filter(u => !u.isAdmin).map(({ password, ...u }) => u));
-});
-
-app.get('/api/admin/config', authenticateJWT, authorizeAdmin, (req, res) => res.json(siteConfig));
-
-app.put('/api/admin/config', authenticateJWT, authorizeAdmin, (req, res) => {
-  const { siteName, pixKey, minDeposit, maxWithdraw } = req.body;
-  if (siteName) siteConfig.siteName = siteName;
-  if (pixKey) siteConfig.pixKey = pixKey;
-  if (minDeposit) siteConfig.minDeposit = parseFloat(minDeposit);
-  if (maxWithdraw) siteConfig.maxWithdraw = parseFloat(maxWithdraw);
-  res.json({ message: 'Configurações salvas!', siteConfig });
 });
 
 // ==================== CATCH-ALL ====================
@@ -281,7 +240,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ==================== START ====================
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n  W.M esporte013 rodando em http://localhost:${PORT}\n  Admin: admin / admin123\n`);
+  console.log(`\n  W.M esporte013 rodando em http://localhost:${PORT}\n`);
 });

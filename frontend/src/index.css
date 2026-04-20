@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+  --primary: #DC0000; /* Vermelho Ferrari */
+  --primary-dark: #8B0000;
+  --gold: #FFD700;    /* Dourado Ouro */
+  --gold-dark: #B8860B;
+  --bg-dark: #0b0e11;
+  --bg-card: #161b22;
+  --bg-sidebar: #1a1e24;
+  --text-main: #ffffff;
+  --text-muted: #848d9a;
+  --border: #2a2e35;
+  --success: #00c853;
+  --danger: #ff1744;
+  --header-height: 60px;
+  --sidebar-width: 240px;
+  --betslip-width: 320px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.gold-text {
+  color: var(--gold);
+}
+
+.red-text {
+  color: var(--primary);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Layout Principal */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-wrapper {
+  display: flex;
+  flex: 1;
+  margin-top: var(--header-height);
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--bg-dark);
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* Sidebar e Betslip Fixos */
+.sidebar-fixed {
+  width: var(--sidebar-width);
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  height: calc(100vh - var(--header-height));
+  position: sticky;
+  top: var(--header-height);
+  overflow-y: auto;
+}
+
+.betslip-fixed {
+  width: var(--betslip-width);
+  background-color: var(--bg-sidebar);
+  border-left: 1px solid var(--border);
+  height: calc(100vh - var(--header-height));
+  position: sticky;
+  top: var(--header-height);
+  overflow-y: auto;
+}
+
+/* Responsividade Básica */
+@media (max-width: 1200px) {
+  .betslip-fixed {
+    display: none; /* Em telas menores, o bilhete pode ser um modal ou drawer */
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-fixed {
+    display: none;
+  }
+}
+
+/* Componentes Globais */
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: #000;
+  font-weight: 800;
+  border-radius: 4px;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.btn-gold:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 10px 20px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 4px;
+  padding: 10px 20px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.badge-live {
+  background-color: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  animation: blink 1.5s infinite;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  background: #1a1e24;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: #fff;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--gold);
+}

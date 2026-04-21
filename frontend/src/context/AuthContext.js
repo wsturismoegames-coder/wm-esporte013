@@ -20,6 +20,10 @@ export const AuthProvider = ({ children }) => {
       if (!adminFlag) {
         fetchBalance();
       }
+      // Fetch user data
+      api.get('/api/user/me').then(res => {
+        setUser(prev => ({ ...prev, ...res.data }));
+      }).catch(() => {});
     }
     setLoading(false);
   }, []);
@@ -36,10 +40,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (phone, password) => {
     const res = await api.post('/api/auth/login', { phone, password });
     localStorage.setItem('token', res.data.token);
-    localStorage.removeItem('isAdmin');
-    setUser({ token: res.data.token });
-    setIsAdmin(false);
-    await fetchBalance();
+    if (res.data.isAdmin) {
+      localStorage.setItem('isAdmin', 'true');
+      setUser({ token: res.data.token, phone });
+      setIsAdmin(true);
+    } else {
+      localStorage.removeItem('isAdmin');
+      setUser({ token: res.data.token, phone });
+      setIsAdmin(false);
+      await fetchBalance();
+    }
     return res.data;
   };
 
@@ -47,9 +57,9 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post('/api/auth/register', { phone, password });
     localStorage.setItem('token', res.data.token);
     localStorage.removeItem('isAdmin');
-    setUser({ token: res.data.token });
+    setUser({ token: res.data.token, phone, balance: 50 });
     setIsAdmin(false);
-    setBalance(0);
+    setBalance(50);
     return res.data;
   };
 
@@ -57,7 +67,7 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post('/api/admin/login', { phone, password });
     localStorage.setItem('token', res.data.token);
     localStorage.setItem('isAdmin', 'true');
-    setUser({ token: res.data.token });
+    setUser({ token: res.data.token, phone });
     setIsAdmin(true);
     return res.data;
   };

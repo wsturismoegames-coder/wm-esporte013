@@ -150,16 +150,16 @@ const Home = ({ ticket, setTicket }) => {
                 <div style={{ flex: 1, textAlign: 'left', fontWeight: 700 }}>{event.team2}</div>
               </div>
               <div style={styles.oddGroup}>
-                {['team1Win', 'draw', 'team2Win'].map((sel, idx) => {
-                  const labels = ['1', 'X', '2'];
+                {['team1Win', 'draw', 'team2Win'].filter(sel => event.odds[sel] !== undefined).map((sel, idx) => {
+                  const labelMap = { team1Win: '1', draw: 'X', team2Win: '2' };
                   const isSelected = ticket.find(b => b.eventId === event.id && b.selection === sel);
                   return (
                     <button 
                       key={sel} 
                       style={styles.oddBtn(isSelected)}
-                      onClick={() => addToTicket(event, sel, labels[idx], event.odds[sel])}
+                      onClick={() => addToTicket(event, sel, labelMap[sel], event.odds[sel])}
                     >
-                      <span style={styles.oddLabel}>{labels[idx]}</span>
+                      <span style={styles.oddLabel}>{labelMap[sel]}</span>
                       {event.odds[sel].toFixed(2)}
                     </button>
                   );
@@ -184,16 +184,16 @@ const Home = ({ ticket, setTicket }) => {
               <div style={{ marginTop: '4px' }}>{event.team2}</div>
             </div>
             <div style={styles.oddGroup}>
-              {['team1Win', 'draw', 'team2Win'].map((sel, idx) => {
-                const labels = ['1', 'X', '2'];
+              {['team1Win', 'draw', 'team2Win'].filter(sel => event.odds[sel] !== undefined).map((sel) => {
+                const labelMap = { team1Win: '1', draw: 'X', team2Win: '2' };
                 const isSelected = ticket.find(b => b.eventId === event.id && b.selection === sel);
                 return (
                   <button 
                     key={sel} 
                     style={styles.oddBtn(isSelected)}
-                    onClick={() => addToTicket(event, sel, labels[idx], event.odds[sel])}
+                    onClick={() => addToTicket(event, sel, labelMap[sel], event.odds[sel])}
                   >
-                    <span style={styles.oddLabel}>{labels[idx]}</span>
+                    <span style={styles.oddLabel}>{labelMap[sel]}</span>
                     {event.odds[sel].toFixed(2)}
                   </button>
                 );

@@ -182,7 +182,7 @@ const Betslip = ({ ticket = [], setTicket }) => {
                   type="number" 
                   value={betAmount} 
                   onChange={(e) => setBetAmount(e.target.value)}
-                  style={{...styles.inputField, width: '80px', padding: '5px', textAlign: 'center'}}
+                  className="input-field" style={{ width: '80px', padding: '5px', textAlign: 'center' }}
                 />
               </div>
 

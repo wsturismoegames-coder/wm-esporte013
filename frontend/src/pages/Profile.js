@@ -140,7 +140,7 @@ const Profile = () => {
           </div>
 
           <div style={{ marginBottom: '30px' }}>
-            <input type="number" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} style={{ ...styles.inputField, width: '200px', textAlign: 'center', fontSize: '24px', fontWeight: 800 }} />
+            <input type="number" value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} className="input-field" style={{ width: '200px', textAlign: 'center', fontSize: '24px', fontWeight: 800 }} />
           </div>
 
           <button className="btn-gold" style={{ padding: '15px 60px', width: '100%', maxWidth: '400px' }} onClick={handleDeposit} disabled={loading}>

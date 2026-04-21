@@ -105,6 +105,22 @@ app.post('/api/auth/login', async (req, res) => {
   res.json({ message: 'Bem-vindo!', token, isAdmin: user.isAdmin });
 });
 
+app.post('/api/admin/login', async (req, res) => {
+  const { phone, password } = req.body;
+  const admin = users.find(u => u.phone === phone && u.isAdmin);
+  if (!admin) return res.status(400).json({ message: 'Credenciais inválidas.' });
+  const ok = await bcrypt.compare(password, admin.password);
+  if (!ok) return res.status(400).json({ message: 'Credenciais inválidas.' });
+  const token = jwt.sign({ id: admin.id, phone, isAdmin: true }, JWT_SECRET, { expiresIn: '24h' });
+  res.json({ message: 'Acesso admin liberado!', token });
+});
+
+app.get('/api/wallet', authenticateJWT, (req, res) => {
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
+  res.json({ balance: user.balance });
+});
+
 app.get('/api/user/me', authenticateJWT, (req, res) => {
   const user = users.find(u => u.id === req.user.id);
   if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });

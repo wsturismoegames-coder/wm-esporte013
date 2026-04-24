@@ -87,6 +87,9 @@ const Sidebar = () => {
         ))}
 
         <div style={styles.sectionTitle}>Suporte & Info</div>
+        <NavLink to="/wallet" style={({ isActive }) => isActive ? { ...styles.navItem, ...styles.activeNavItem } : styles.navItem}>
+          <span style={styles.icon}>💰</span> Carteira / Saque
+        </NavLink>
         <NavLink to="/profile" style={({ isActive }) => isActive ? { ...styles.navItem, ...styles.activeNavItem } : styles.navItem}>
           <span style={styles.icon}>👤</span> Minha Conta
         </NavLink>

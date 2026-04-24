@@ -99,6 +99,9 @@ const Header = () => {
               <span style={{ color: 'var(--text-muted)', fontSize: '11px', marginRight: '5px' }}>SALDO:</span>
               R$ {user.balance?.toFixed(2)}
             </div>
+            <Link to="/wallet" className="btn-gold" style={{ padding: '6px 14px', fontSize: '12px', textDecoration: 'none' }}>
+              DEPOSITAR
+            </Link>
             <Link to="/profile" style={styles.profileBtn}>
               {user.phone?.substring(0, 1).toUpperCase()}
             </Link>

@@ -13,6 +13,7 @@ import AIAnalysis from './pages/AIAnalysis';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
+import Wallet from './pages/Wallet';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -44,6 +45,7 @@ const AppContent = () => {
             <Route path="/sports" element={<Sports ticket={ticket} setTicket={setTicket} />} />
             <Route path="/ai" element={<AIAnalysis />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

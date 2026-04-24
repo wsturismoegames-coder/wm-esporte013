@@ -215,14 +215,73 @@ app.post('/api/casino/play', authenticateJWT, (req, res) => {
 app.post('/api/wallet/deposit', authenticateJWT, (req, res) => {
   const { amount } = req.body;
   const user = users.find(u => u.id === req.user.id);
-  // Simulação de PIX
-  const qrCode = "00020126360014BR.GOV.BCB.PIX0114wm-esporte013520400005303986540510.005802BR5913WM_ESPORTE0136009SAO_PAULO62070503***6304ABCD";
-  res.json({ qrCode, amount });
+  if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
+  if (!amount || amount < siteConfig.minDeposit) return res.status(400).json({ message: `Depósito mínimo: R$ ${siteConfig.minDeposit}` });
+  
+  // Simulação de PIX - credita na hora
+  user.balance += amount;
+  const tx = { id: uuidv4(), userId: user.id, type: 'deposit', amount, status: 'approved', date: new Date() };
+  transactions.push(tx);
+  const pixPayload = `00020126360014BR.GOV.BCB.PIX0114${siteConfig.pixKey}520400005303986540${amount.toFixed(2)}5802BR5913WM_ESPORTE0136009SAO_PAULO62070503***6304ABCD`;
+  const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixPayload)}`;
+  res.json({ qrCode, amount, message: `Depósito de R$ ${amount.toFixed(2)} creditado com sucesso!`, newBalance: user.balance });
+});
+
+// ==================== WITHDRAW API ====================
+app.post('/api/wallet/withdraw', authenticateJWT, (req, res) => {
+  const { amount } = req.body;
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
+  if (!amount || amount <= 0) return res.status(400).json({ message: 'Valor inválido.' });
+  if (amount > user.balance) return res.status(400).json({ message: 'Saldo insuficiente.' });
+  if (amount > siteConfig.maxWithdraw) return res.status(400).json({ message: `Valor máximo por saque: R$ ${siteConfig.maxWithdraw}` });
+  if (amount < 10) return res.status(400).json({ message: 'Valor mínimo para saque: R$ 10,00' });
+  
+  user.balance -= amount;
+  const tx = { id: uuidv4(), userId: user.id, type: 'withdraw', amount, status: 'approved', date: new Date() };
+  transactions.push(tx);
+  res.json({ message: `Saque de R$ ${amount.toFixed(2)} solicitado com sucesso! Será processado em até 24h.`, newBalance: user.balance });
+});
+
+app.get('/api/wallet/history', authenticateJWT, (req, res) => {
+  const userTx = transactions.filter(t => t.userId === req.user.id).sort((a, b) => new Date(b.date) - new Date(a.date));
+  res.json(userTx);
 });
 
 app.get('/api/user/history', authenticateJWT, (req, res) => {
   const history = bets_history.filter(b => b.userId === req.user.id);
   res.json(history);
+});
+
+// ==================== ADMIN API ====================
+app.get('/api/admin/dashboard', authenticateJWT, (req, res) => {
+  if (!req.user.isAdmin) return res.sendStatus(403);
+  const totalUsers = users.filter(u => !u.isAdmin).length;
+  const totalDeposits = transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0);
+  const totalWithdrawals = transactions.filter(t => t.type === 'withdraw').reduce((sum, t) => sum + t.amount, 0);
+  const totalProfit = totalDeposits - totalWithdrawals;
+  res.json({ totalUsers, totalDeposits, totalWithdrawals, totalProfit });
+});
+
+app.get('/api/admin/users', authenticateJWT, (req, res) => {
+  if (!req.user.isAdmin) return res.sendStatus(403);
+  const userList = users.filter(u => !u.isAdmin).map(u => ({ id: u.id, phone: u.phone, balance: u.balance }));
+  res.json(userList);
+});
+
+app.get('/api/admin/config', authenticateJWT, (req, res) => {
+  if (!req.user.isAdmin) return res.sendStatus(403);
+  res.json(siteConfig);
+});
+
+app.put('/api/admin/config', authenticateJWT, (req, res) => {
+  if (!req.user.isAdmin) return res.sendStatus(403);
+  const { siteName, pixKey, minDeposit, maxWithdraw } = req.body;
+  if (siteName) siteConfig.siteName = siteName;
+  if (pixKey) siteConfig.pixKey = pixKey;
+  if (minDeposit) siteConfig.minDeposit = minDeposit;
+  if (maxWithdraw) siteConfig.maxWithdraw = maxWithdraw;
+  res.json({ message: 'Configurações atualizadas!', config: siteConfig });
 });
 
 // ==================== IA API ====================
